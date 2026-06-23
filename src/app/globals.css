@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --focus-ring: rgba(44, 95, 138, 0.35);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-white text-ink font-sans antialiased;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-semibold text-ink;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  /* Accessibility: clear, consistent focus ring (non-negotiable). */
+  :where(a, button, input, textarea, select, [tabindex]):focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring);
+    border-radius: 4px;
+  }
+
+  /* Rich-text (WYSIWYG) description rendering on file pages. */
+  .prose-portal p {
+    @apply mb-4 text-ink;
+  }
+  .prose-portal p:last-child {
+    @apply mb-0;
+  }
+  .prose-portal a {
+    @apply text-accent underline underline-offset-2 hover:text-accent-hover;
+  }
+  .prose-portal ul {
+    @apply mb-4 list-disc pl-6;
+  }
+  .prose-portal ol {
+    @apply mb-4 list-decimal pl-6;
+  }
+  .prose-portal li {
+    @apply mb-1;
+  }
+  .prose-portal strong {
+    @apply font-semibold;
+  }
+}
+
+@layer utilities {
+  .container-page {
+    @apply mx-auto w-full max-w-container px-6;
+  }
+  .container-narrow {
+    @apply mx-auto w-full max-w-narrow px-6;
+  }
+}
+
+/* Hide scrollbar chrome but keep scrollability (comment scroll area). */
+.scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: #C3CCDB transparent;
+}
+.scroll-area::-webkit-scrollbar {
+  width: 8px;
+}
+.scroll-area::-webkit-scrollbar-thumb {
+  background: #C3CCDB;
+  border-radius: 999px;
+}

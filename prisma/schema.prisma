@@ -1,0 +1,88 @@
+// Dr. Newman's Content Portal — Prisma schema
+// Tables: files, categories, comments, site_settings, admin_users
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum FileType {
+  PDF
+  MP3
+  MP4
+  JPG
+  PNG
+  PPT
+  XLS
+  DOC
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  position  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  files File[]
+
+  @@map("categories")
+}
+
+model File {
+  id           Int       @id @default(autoincrement())
+  title        String
+  description  String    @default("") // HTML from the WYSIWYG editor
+  categoryId   Int?      @map("category_id")
+  fileType     FileType  @map("file_type")
+  url          String    @default("")
+  storageKey   String    @default("") @map("storage_key")
+  fileSize     Int       @default(0) @map("file_size") // bytes
+  isYoutube    Boolean   @default(false) @map("is_youtube")
+  downloads    Int       @default(0)
+  dateUploaded DateTime  @default(now()) @map("date_uploaded")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  comments Comment[]
+
+  @@index([categoryId])
+  @@map("files")
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  fileId     Int      @map("file_id")
+  content    String
+  email      String
+  isPublic   Boolean  @default(true) @map("is_public")
+  // null = pending, true = approved, false = rejected
+  isApproved Boolean? @map("is_approved")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  file File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@index([fileId])
+  @@map("comments")
+}
+
+model SiteSetting {
+  key       String   @id
+  value     String   @default("")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
+
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("admin_users")
+}
