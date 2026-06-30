@@ -1,4 +1,4 @@
-import { PrismaClient, type FileType } from "@prisma/client";
+import { PrismaClient, type FileType, type NotificationType } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { SETTING_DEFAULTS } from "../src/lib/settings";
 
@@ -232,6 +232,94 @@ async function main() {
     }
     console.log(`  ✓ ${comments.length} sample comments`);
   }
+
+  // ── Sample notifications ────────────────────────────────
+  const notifFile = await prisma.file.findFirst({
+    where: { title: "Cardiac Imaging in Primary Care" },
+  });
+  const poemsFile = await prisma.file.findFirst({
+    where: { title: "Field Recordings — Coastal Birdsong" },
+  });
+  const notifications: Array<{
+    type: NotificationType;
+    title: string;
+    body: string;
+    fileId: number | null;
+    isRead: boolean;
+    isFavourite: boolean;
+    hoursAgo: number;
+  }> = [
+    {
+      type: "COMMENT",
+      title: "New comment awaiting review",
+      body: "A public comment was submitted about the borderline follow-up interval.",
+      fileId: notifFile?.id ?? null,
+      isRead: false,
+      isFavourite: false,
+      hoursAgo: 1,
+    },
+    {
+      type: "DOWNLOAD",
+      title: "Reached 1,000 downloads",
+      body: '"Cardiac Imaging in Primary Care" is now your most downloaded item.',
+      fileId: notifFile?.id ?? null,
+      isRead: false,
+      isFavourite: true,
+      hoursAgo: 5,
+    },
+    {
+      type: "UPLOAD",
+      title: "File uploaded",
+      body: '"Field Recordings — Coastal Birdsong" is now live in the library.',
+      fileId: poemsFile?.id ?? null,
+      isRead: true,
+      isFavourite: false,
+      hoursAgo: 28,
+    },
+    {
+      type: "MODERATION",
+      title: "Comment approved",
+      body: "A comment was approved and is now public.",
+      fileId: notifFile?.id ?? null,
+      isRead: true,
+      isFavourite: true,
+      hoursAgo: 50,
+    },
+    {
+      type: "SYSTEM",
+      title: "Site settings updated",
+      body: "The homepage welcome text and copyright notice were changed.",
+      fileId: null,
+      isRead: true,
+      isFavourite: false,
+      hoursAgo: 96,
+    },
+    {
+      type: "SYSTEM",
+      title: "New sign-in detected",
+      body: "Your account was accessed from a new device. If this wasn't you, change your password.",
+      fileId: null,
+      isRead: false,
+      isFavourite: false,
+      hoursAgo: 120,
+    },
+  ];
+  for (const n of notifications) {
+    const date = new Date(now);
+    date.setHours(date.getHours() - n.hoursAgo);
+    await prisma.notification.create({
+      data: {
+        type: n.type,
+        title: n.title,
+        body: n.body,
+        fileId: n.fileId,
+        isRead: n.isRead,
+        isFavourite: n.isFavourite,
+        createdAt: date,
+      },
+    });
+  }
+  console.log(`  ✓ ${notifications.length} sample notifications`);
 
   console.log("Seed complete.");
 }

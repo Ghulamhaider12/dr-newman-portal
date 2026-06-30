@@ -1,15 +1,13 @@
-import Link from "next/link";
-import { Bell } from "lucide-react";
-import { CountBadge } from "@/components/ui/Badge";
+import { NotificationBell } from '@/components/admin/NotificationBell';
 
 export function PageHeader({
   title,
   subtitle,
-  pendingCount = 0,
   action,
 }: {
   title: string;
   subtitle?: string;
+  /** @deprecated kept for call-site compatibility; the bell now tracks notifications. */
   pendingCount?: number;
   action?: React.ReactNode;
 }) {
@@ -21,18 +19,7 @@ export function PageHeader({
       </div>
       <div className="flex items-center gap-4">
         {action}
-        <Link
-          href="/admin/comments"
-          className="relative inline-flex h-11 w-11 items-center justify-center rounded-control text-ink-muted hover:bg-surface"
-          aria-label={`${pendingCount} pending comments`}
-        >
-          <Bell size={20} />
-          {pendingCount > 0 && (
-            <span className="absolute -right-0.5 -top-0.5">
-              <CountBadge count={pendingCount} />
-            </span>
-          )}
-        </Link>
+        <NotificationBell />
       </div>
     </div>
   );

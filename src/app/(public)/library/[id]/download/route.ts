@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSignedDownloadUrl } from "@/lib/spaces";
 import { parseYoutube } from "@/lib/utils";
+import { notifyDownloadMilestone } from "@/lib/notifications";
 
 /**
  * Increments the download counter, then redirects to a short-lived signed
@@ -17,10 +18,13 @@ export async function GET(
   const file = await prisma.file.findUnique({ where: { id } });
   if (!file) return new NextResponse("Not found", { status: 404 });
 
-  await prisma.file.update({
+  const updated = await prisma.file.update({
     where: { id },
     data: { downloads: { increment: 1 } },
   });
+
+  // Fail-soft milestone notification (only when crossing 100/500/1,000…).
+  await notifyDownloadMilestone({ id: file.id, title: file.title }, updated.downloads);
 
   if (file.isYoutube) {
     const watch = parseYoutube(file.url) ?? file.url;

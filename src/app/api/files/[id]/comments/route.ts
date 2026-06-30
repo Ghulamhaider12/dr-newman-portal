@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { notifyNewComment } from "@/lib/email";
+import { createNotification } from "@/lib/notifications";
 
 /** Public: submit a comment. Starts pending (is_approved = null). */
 export async function POST(
@@ -48,6 +49,14 @@ export async function POST(
     email,
     content,
     isPublic,
+  });
+
+  // Fail-soft in-app notification for the admin panel.
+  await createNotification({
+    type: "COMMENT",
+    title: "New comment awaiting review",
+    body: `A ${isPublic ? "public" : "private"} comment was submitted by ${email}.`,
+    fileId,
   });
 
   return NextResponse.json({ ok: true, id: comment.id }, { status: 201 });
