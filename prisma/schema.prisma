@@ -21,6 +21,15 @@ enum FileType {
   DOC
 }
 
+enum NotificationType {
+  COMMENT // new comment submitted / awaiting review
+  DOWNLOAD // download milestone
+  UPLOAD // file uploaded
+  MODERATION // comment approved / rejected
+  SYSTEM // login, settings changed, account
+  OTHER
+}
+
 model Category {
   id        Int      @id @default(autoincrement())
   name      String   @unique
@@ -46,8 +55,9 @@ model File {
   dateUploaded DateTime  @default(now()) @map("date_uploaded")
   createdAt    DateTime  @default(now()) @map("created_at")
 
-  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  comments Comment[]
+  category      Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  comments      Comment[]
+  notifications Notification[]
 
   @@index([categoryId])
   @@map("files")
@@ -67,6 +77,25 @@ model Comment {
 
   @@index([fileId])
   @@map("comments")
+}
+
+model Notification {
+  id          Int              @id @default(autoincrement())
+  type        NotificationType
+  title       String
+  body        String
+  fileId      Int?             @map("file_id")
+  isRead      Boolean          @default(false) @map("is_read")
+  isFavourite Boolean          @default(false) @map("is_favourite")
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  // Optional — SYSTEM events (settings changed, new sign-in) aren't tied to a file.
+  file File? @relation(fields: [fileId], references: [id], onDelete: SetNull)
+
+  @@index([isRead])
+  @@index([isFavourite])
+  @@index([createdAt])
+  @@map("notifications")
 }
 
 model SiteSetting {

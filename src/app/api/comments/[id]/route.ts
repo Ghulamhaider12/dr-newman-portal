@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/apiAuth";
+import { createNotification } from "@/lib/notifications";
 
 /** Admin: approve / reject a comment. */
 export async function PATCH(
@@ -23,6 +24,19 @@ export async function PATCH(
     where: { id },
     data: { isApproved },
   });
+
+  // Fail-soft in-app notification — only for an actual approve/reject decision.
+  if (isApproved === true || isApproved === false) {
+    await createNotification({
+      type: "MODERATION",
+      title: isApproved ? "Comment approved" : "Comment rejected",
+      body: isApproved
+        ? "A comment was approved and is now public."
+        : "A comment was rejected and will not appear publicly.",
+      fileId: comment.fileId,
+    });
+  }
+
   return NextResponse.json({ ok: true, comment });
 }
 

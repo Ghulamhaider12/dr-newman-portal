@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/apiAuth";
 import { SETTING_KEYS, type SettingKey } from "@/lib/settings";
+import { createNotification } from "@/lib/notifications";
 
 /** Admin: update one or more site settings. */
 export async function PUT(req: Request) {
@@ -25,6 +26,15 @@ export async function PUT(req: Request) {
       })
     )
   );
+
+  // Fail-soft in-app notification (only when something actually changed).
+  if (updates.length > 0) {
+    await createNotification({
+      type: "SYSTEM",
+      title: "Site settings updated",
+      body: "Your site text or background photo was changed.",
+    });
+  }
 
   return NextResponse.json({ ok: true });
 }

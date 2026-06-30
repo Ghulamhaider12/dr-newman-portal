@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/apiAuth";
 import { detectFileType } from "@/lib/fileType";
 import { parseYoutube } from "@/lib/utils";
+import { createNotification } from "@/lib/notifications";
 
 /** Admin: create a file record (after upload or with a YouTube URL). */
 export async function POST(req: Request) {
@@ -65,6 +66,14 @@ export async function POST(req: Request) {
       isYoutube,
       dateUploaded: body.dateUploaded ? new Date(body.dateUploaded) : new Date(),
     },
+  });
+
+  // Fail-soft in-app notification.
+  await createNotification({
+    type: "UPLOAD",
+    title: file.isYoutube ? "YouTube link added" : "File uploaded",
+    body: `"${file.title}" is now live in the library.`,
+    fileId: file.id,
   });
 
   return NextResponse.json({ ok: true, file }, { status: 201 });
