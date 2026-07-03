@@ -93,6 +93,29 @@ export function parseYoutube(url: string): string | null {
   }
 }
 
+/** Extract YouTube video ID from various URL formats. Returns null if invalid. */
+export function extractYouTubeId(url: string): string | null {
+  try {
+    const u = new URL(url.trim());
+    const host = u.hostname.replace(/^www\./, '');
+    if (host === 'youtu.be') {
+      const id = u.pathname.slice(1).split('/')[0];
+      return id || null;
+    }
+    if (host === 'youtube.com' || host === 'm.youtube.com') {
+      const id = u.searchParams.get('v');
+      if (id) return id;
+      if (u.pathname.startsWith('/embed/')) {
+        const embedId = u.pathname.split('/')[2];
+        return embedId || null;
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 /** Strip HTML tags to a plain-text excerpt (for card previews). */
 export function htmlToText(html: string, max = 160): string {
   const text = html

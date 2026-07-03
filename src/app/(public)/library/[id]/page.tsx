@@ -5,9 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { getSettings } from "@/lib/settings";
 import { CategoryBadge, FileTypeBadge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
-import { CopyBox } from "@/components/public/CopyBox";
+import { YouTubePlayer } from "@/components/public/YouTubePlayer";
 import { Comments, type PublicComment } from "@/components/public/Comments";
-import { formatDate, formatFileSize, formatCount, parseYoutube } from "@/lib/utils";
+import { formatDate, formatFileSize, formatCount } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +35,6 @@ export default async function FileDetailPage({
 
   if (!file) notFound();
 
-  const watchUrl = file.isYoutube ? parseYoutube(file.url) ?? file.url : null;
   const comments: PublicComment[] = file.comments.map((c) => ({
     id: c.id,
     content: c.content,
@@ -72,6 +71,13 @@ export default async function FileDetailPage({
             />
           )}
 
+          {/* YouTube Player */}
+          {file.isYoutube && (
+            <div className="mt-6">
+              <YouTubePlayer url={file.url} />
+            </div>
+          )}
+
           {/* Metadata */}
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-ink-muted">
             <span className="inline-flex items-center gap-1.5">
@@ -90,11 +96,9 @@ export default async function FileDetailPage({
             )}
           </div>
 
-          {/* Action */}
-          <div className="mt-7">
-            {file.isYoutube && watchUrl ? (
-              <CopyBox url={watchUrl} />
-            ) : (
+          {/* Action (non-YouTube only) */}
+          {!file.isYoutube && (
+            <div className="mt-7">
               <ButtonLink
                 href={`/library/${file.id}/download`}
                 variant="success"
@@ -103,8 +107,8 @@ export default async function FileDetailPage({
                 <Download size={18} />
                 Download
               </ButtonLink>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Copyright notice */}
           <div className="mt-8 rounded-card border border-warning/30 bg-[#FBF3EA] p-4">
