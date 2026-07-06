@@ -1,0 +1,67 @@
+spec:
+  name: dr-newman-portal
+  region: nyc
+  services:
+    - name: dr-newman-portal
+      dockerfile_path: Dockerfile
+      github:
+        repo: Ghulamhaider12/dr-newman-portal
+        branch: main
+        deploy_on_push: true
+      instance_count: 1
+      instance_size_slug: apps-s-1vcpu-1gb
+      http_port: 3000
+      routes:
+        - path: /
+      health_check:
+        http_path: /
+        initial_delay_seconds: 30
+        period_seconds: 10
+        timeout_seconds: 5
+        success_threshold: 1
+        failure_threshold: 3
+      envs:
+        # Database connection - will be auto-populated if using DO managed database
+        - key: DATABASE_URL
+          scope: RUN_AND_BUILD_TIME
+          type: SECRET
+        # NextAuth configuration
+        - key: NEXTAUTH_SECRET
+          scope: RUN_TIME
+          type: SECRET
+        - key: NEXTAUTH_URL
+          scope: RUN_TIME
+          value: ${APP_URL}
+        # DigitalOcean Spaces (S3-compatible storage)
+        - key: DO_SPACES_ENDPOINT
+          scope: RUN_TIME
+          type: SECRET
+        - key: DO_SPACES_REGION
+          scope: RUN_TIME
+          value: nyc3
+        - key: DO_SPACES_BUCKET
+          scope: RUN_TIME
+          type: SECRET
+        - key: DO_SPACES_KEY
+          scope: RUN_TIME
+          type: SECRET
+        - key: DO_SPACES_SECRET
+          scope: RUN_TIME
+          type: SECRET
+        - key: DO_SPACES_CDN
+          scope: RUN_TIME
+          type: SECRET
+        # SendGrid email
+        - key: SENDGRID_API_KEY
+          scope: RUN_TIME
+          type: SECRET
+        - key: SENDGRID_FROM_EMAIL
+          scope: RUN_TIME
+          value: portal@drnewman.example
+        - key: ADMIN_NOTIFY_EMAIL
+          scope: RUN_TIME
+          value: admin@drnewman.example
+        # Node environment
+        - key: NODE_ENV
+          scope: RUN_TIME
+          value: production
