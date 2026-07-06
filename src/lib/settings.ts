@@ -23,11 +23,21 @@ export const SETTING_DEFAULTS: Record<SettingKey, string> = {
 };
 
 export async function getSettings(): Promise<Record<SettingKey, string>> {
-  const rows = await prisma.siteSetting.findMany();
-  const map = new Map(rows.map((r) => [r.key, r.value]));
-  const out = {} as Record<SettingKey, string>;
-  for (const key of SETTING_KEYS) {
-    out[key] = map.get(key) ?? SETTING_DEFAULTS[key];
+  // During build without DATABASE_URL, return defaults
+  if (!process.env.DATABASE_URL) {
+    return { ...SETTING_DEFAULTS };
   }
-  return out;
+
+  try {
+    const rows = await prisma.siteSetting.findMany();
+    const map = new Map(rows.map((r) => [r.key, r.value]));
+    const out = {} as Record<SettingKey, string>;
+    for (const key of SETTING_KEYS) {
+      out[key] = map.get(key) ?? SETTING_DEFAULTS[key];
+    }
+    return out;
+  } catch {
+    // Fallback to defaults on any DB error
+    return { ...SETTING_DEFAULTS };
+  }
 }
