@@ -10,5 +10,8 @@ build
 CLAUDE.local.md
 next-env.d.ts
 /uploads
+# Runtime upload data (local-disk storage fallback) — never commit user uploads
+/public/uploads/*
+!/public/uploads/.gitkeep
 .claude/settings.local.json
 *.tsbuildinfo
