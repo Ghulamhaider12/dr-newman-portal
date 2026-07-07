@@ -111,3 +111,4 @@ middleware.ts  protects /admin (except /admin/login)
 A `Dockerfile` and `docker-compose.yml` are included. For DigitalOcean App
 Platform: build from the Dockerfile, set the env vars above (with a managed
 Postgres `DATABASE_URL`), and run `npm run db:migrate` as a pre-deploy step.
+# Deployed via webhook
