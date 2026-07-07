@@ -1,13 +1,13 @@
-import Link from "next/link";
-import { Stethoscope, Palette, Library as LibraryIcon, ArrowRight } from "lucide-react";
-import { prisma } from "@/lib/prisma";
-import { getSettings } from "@/lib/settings";
-import { publicUrl } from "@/lib/spaces";
-import { ButtonLink } from "@/components/ui/Button";
-import { FileCard, type FileCardData } from "@/components/public/FileCard";
-import { categoryColor } from "@/lib/utils";
+import Link from 'next/link';
+import { Stethoscope, Palette, Library as LibraryIcon, ArrowRight } from 'lucide-react';
+import { prisma } from '@/lib/prisma';
+import { getSettings } from '@/lib/settings';
+import { publicUrl } from '@/lib/spaces';
+import { ButtonLink } from '@/components/ui/Button';
+import { FileCard, type FileCardData } from '@/components/public/FileCard';
+import { categoryColor } from '@/lib/utils';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 const CATEGORY_ICON = {
   medical: Stethoscope,
@@ -19,19 +19,20 @@ export default async function HomePage() {
   const [settings, categories, recent] = await Promise.all([
     getSettings(),
     prisma.category.findMany({
-      orderBy: { position: "asc" },
+      orderBy: { position: 'asc' },
       include: { _count: { select: { files: true } } },
     }),
     prisma.file.findMany({
-      orderBy: { dateUploaded: "desc" },
+      orderBy: { dateUploaded: 'desc' },
       take: 6,
       include: { category: { select: { name: true } } },
     }),
   ]);
 
-  const bg = settings.background_photo
-    ? publicUrl(settings.background_photo)
-    : "";
+  const bg = settings.background_photo ? publicUrl(settings.background_photo) : '';
+  const recentBg = settings.recent_background_photo
+    ? publicUrl(settings.recent_background_photo)
+    : '';
 
   return (
     <>
@@ -40,12 +41,7 @@ export default async function HomePage() {
         {bg && (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={bg}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-primary/80" />
+            <img src={bg} alt="" className="absolute inset-0 h-full w-full object-cover" />
           </>
         )}
         <div className="container-page relative py-24">
@@ -74,9 +70,7 @@ export default async function HomePage() {
 
       {/* Browse by category */}
       <section className="container-page py-16">
-        <h2 className="font-serif text-2xl font-semibold text-ink">
-          Browse by category
-        </h2>
+        <h2 className="font-serif text-2xl font-semibold text-ink">Browse by category</h2>
         <p className="mt-1 text-ink-muted">
           Find papers, talks, recordings, and writing by subject.
         </p>
@@ -94,17 +88,8 @@ export default async function HomePage() {
                   className="flex h-12 w-12 items-center justify-center rounded-card"
                   style={{
                     backgroundColor:
-                      key === "medical"
-                        ? "#EBF3FA"
-                        : key === "art"
-                        ? "#E5F0F2"
-                        : "#EEF1F5",
-                    color:
-                      key === "medical"
-                        ? "#2C5F8A"
-                        : key === "art"
-                        ? "#4A90A4"
-                        : "#5A6778",
+                      key === 'medical' ? '#EBF3FA' : key === 'art' ? '#E5F0F2' : '#EEF1F5',
+                    color: key === 'medical' ? '#2C5F8A' : key === 'art' ? '#4A90A4' : '#5A6778',
                   }}
                 >
                   <Icon size={22} />
@@ -114,8 +99,7 @@ export default async function HomePage() {
                     {cat.name}
                   </h3>
                   <p className="text-sm text-ink-muted">
-                    {cat._count.files}{" "}
-                    {cat._count.files === 1 ? "item" : "items"}
+                    {cat._count.files} {cat._count.files === 1 ? 'item' : 'items'}
                   </p>
                 </div>
                 <ArrowRight
@@ -129,20 +113,34 @@ export default async function HomePage() {
       </section>
 
       {/* Recent additions */}
-      <section className="border-t border-border bg-surface">
-        <div className="container-page py-16">
+      <section className="relative overflow-hidden border-t border-border bg-surface">
+        {recentBg && (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={recentBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          </>
+        )}
+        <div className="container-page relative py-16">
           <div className="flex items-end justify-between">
             <div>
-              <h2 className="font-serif text-2xl font-semibold text-ink">
+              <h2
+                className={`font-serif text-2xl font-semibold ${
+                  recentBg ? 'text-white' : 'text-ink'
+                }`}
+              >
                 Recent additions
               </h2>
-              <p className="mt-1 text-ink-muted">
+              <p className={`mt-1 ${recentBg ? 'text-white/85' : 'text-ink-muted'}`}>
                 The latest items added to the library.
               </p>
             </div>
             <Link
               href="/library"
-              className="hidden text-sm font-medium text-accent hover:text-accent-hover hover:underline sm:inline"
+              className={`hidden text-sm font-medium sm:inline ${
+                recentBg
+                  ? 'text-white hover:underline'
+                  : 'text-accent hover:text-accent-hover hover:underline'
+              }`}
             >
               View all →
             </Link>

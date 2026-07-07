@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
-import { getSettings } from "@/lib/settings";
-import { publicUrl } from "@/lib/spaces";
-import { PageHeader } from "@/components/admin/PageHeader";
-import { SettingsForm } from "@/components/admin/SettingsForm";
+import { prisma } from '@/lib/prisma';
+import { getSettings } from '@/lib/settings';
+import { publicUrl } from '@/lib/spaces';
+import { PageHeader } from '@/components/admin/PageHeader';
+import { SettingsForm } from '@/components/admin/SettingsForm';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export default async function AdminSettingsPage() {
   const [settings, pending] = await Promise.all([
@@ -12,9 +12,10 @@ export default async function AdminSettingsPage() {
     prisma.comment.count({ where: { isApproved: null } }),
   ]);
 
-  const backgroundUrl = settings.background_photo
-    ? publicUrl(settings.background_photo)
-    : "";
+  const backgroundUrl = settings.background_photo ? publicUrl(settings.background_photo) : '';
+  const recentBackgroundUrl = settings.recent_background_photo
+    ? publicUrl(settings.recent_background_photo)
+    : '';
 
   return (
     <>
@@ -24,7 +25,11 @@ export default async function AdminSettingsPage() {
         pendingCount={pending}
       />
       <div className="p-8">
-        <SettingsForm initial={settings} backgroundUrl={backgroundUrl} />
+        <SettingsForm
+          initial={settings}
+          backgroundUrl={backgroundUrl}
+          recentBackgroundUrl={recentBackgroundUrl}
+        />
       </div>
     </>
   );

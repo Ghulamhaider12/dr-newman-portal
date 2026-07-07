@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { LogoMark } from "@/components/ui/Logo";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { LogoMark } from '@/components/ui/Logo';
 
 const LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/library", label: "Library" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
+  { href: '/', label: 'Home' },
+  { href: '/library', label: 'Library' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
 ];
 
 export function Navbar() {
@@ -19,8 +19,8 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   function isActive(href: string) {
-    if (href === "/") return pathname === "/";
-    return pathname === href || pathname.startsWith(href + "/");
+    if (href === '/') return pathname === '/';
+    return pathname === href || pathname.startsWith(href + '/');
   }
 
   return (
@@ -28,9 +28,7 @@ export function Navbar() {
       <div className="container-page flex h-[68px] items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
           <LogoMark className="h-9 w-9 text-lg" />
-          <span className="font-serif text-xl font-semibold text-ink">
-            Dr. Newman
-          </span>
+          <span className="font-serif text-xl font-semibold text-ink">advice4doc</span>
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
@@ -39,10 +37,10 @@ export function Navbar() {
               key={l.href}
               href={l.href}
               className={cn(
-                "py-1 text-base transition-colors",
+                'py-1 text-base transition-colors',
                 isActive(l.href)
-                  ? "font-semibold text-primary [border-bottom:2px_solid_#2C5F8A]"
-                  : "text-ink hover:text-primary"
+                  ? 'font-semibold text-primary [border-bottom:2px_solid_#2C5F8A]'
+                  : 'text-ink hover:text-primary'
               )}
             >
               {l.label}
@@ -69,10 +67,8 @@ export function Navbar() {
                 href={l.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex min-h-[44px] items-center text-base",
-                  isActive(l.href)
-                    ? "font-semibold text-primary"
-                    : "text-ink"
+                  'flex min-h-[44px] items-center text-base',
+                  isActive(l.href) ? 'font-semibold text-primary' : 'text-ink'
                 )}
               >
                 {l.label}

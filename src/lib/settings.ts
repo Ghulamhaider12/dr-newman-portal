@@ -1,11 +1,12 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/lib/prisma';
 
 export const SETTING_KEYS = [
-  "welcome",
-  "copyright",
-  "commercial",
-  "privacy",
-  "background_photo",
+  'welcome',
+  'copyright',
+  'commercial',
+  'privacy',
+  'background_photo',
+  'recent_background_photo',
 ] as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[number];
@@ -14,12 +15,12 @@ export const SETTING_DEFAULTS: Record<SettingKey, string> = {
   welcome:
     "A personal archive of Dr. Newman's research, lectures, recordings, and writing — freely available to browse and download.",
   copyright:
-    "© Dr. A. Newman. Shared for educational and non-commercial use. Please cite Dr. A. Newman and do not redistribute without permission.",
+    '© Dr. A. Newman. Shared for educational and non-commercial use. Please cite Dr. A. Newman and do not redistribute without permission.',
   commercial:
-    "Shared for educational and non-commercial use. Please cite Dr. A. Newman and do not redistribute without permission.",
-  privacy:
-    "Your email is used only to follow up on your comment and is never published or shared.",
-  background_photo: "",
+    'Shared for educational and non-commercial use. Please cite Dr. A. Newman and do not redistribute without permission.',
+  privacy: 'Your email is used only to follow up on your comment and is never published or shared.',
+  background_photo: '',
+  recent_background_photo: '',
 };
 
 export async function getSettings(): Promise<Record<SettingKey, string>> {

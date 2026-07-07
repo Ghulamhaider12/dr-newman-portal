@@ -42,7 +42,7 @@ export function Sidebar({ pendingCount }: { pendingCount: number }) {
       <div className="flex items-center gap-3 border-b border-border px-5 py-5">
         <LogoMark className="h-10 w-10 text-lg" />
         <div>
-          <p className="font-serif text-lg font-semibold leading-tight text-ink">Dr. Newman</p>
+          <p className="font-serif text-lg font-semibold leading-tight text-ink">advice4doc</p>
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-muted">Admin</p>
         </div>
       </div>
