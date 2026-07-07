@@ -1,0 +1,47 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/dr-newman-portal
+
+            # Pull latest changes
+            git pull origin main
+
+            # Build new image
+            docker build -t dr-newman-portal .
+
+            # Stop and remove old container
+            docker stop dr-newman-portal || true
+            docker rm dr-newman-portal || true
+
+            # Start new container
+            docker run -d \
+              --name dr-newman-portal \
+              --network app-network \
+              --env-file .env \
+              -p 3000:3000 \
+              --restart unless-stopped \
+              dr-newman-portal
+
+            # Run migrations
+            docker exec dr-newman-portal npx prisma migrate deploy
+
+            # Cleanup old images
+            docker image prune -f
+
+            echo "Deployment complete!"
