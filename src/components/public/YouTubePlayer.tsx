@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Copy, Check, ExternalLink, Info, AlertCircle } from "lucide-react";
-import { extractYouTubeId } from "@/lib/utils";
+import { useState } from 'react';
+import { Copy, Check, ExternalLink, Info, AlertCircle } from 'lucide-react';
+import { extractYouTubeId } from '@/lib/utils';
 
 interface YouTubePlayerProps {
   url: string;
@@ -23,7 +23,7 @@ export function YouTubePlayer({ url }: YouTubePlayerProps) {
   }
 
   function openInYouTube() {
-    window.open(url, "_blank", "noopener,noreferrer");
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   return (
@@ -32,7 +32,7 @@ export function YouTubePlayer({ url }: YouTubePlayerProps) {
       {videoId ? (
         <div
           className="relative w-full overflow-hidden"
-          style={{ paddingBottom: "56.25%", borderRadius: "6px" }}
+          style={{ paddingBottom: '56.25%', borderRadius: '6px' }}
         >
           <iframe
             src={`https://www.youtube.com/embed/${videoId}`}
@@ -40,7 +40,7 @@ export function YouTubePlayer({ url }: YouTubePlayerProps) {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
             className="absolute inset-0 h-full w-full"
-            style={{ borderRadius: "6px" }}
+            style={{ borderRadius: '6px' }}
           />
         </div>
       ) : (
@@ -64,18 +64,18 @@ export function YouTubePlayer({ url }: YouTubePlayerProps) {
             onClick={copyLink}
             className="inline-flex h-10 items-center gap-2 rounded-md border-2 px-4 text-sm font-medium transition-colors"
             style={{
-              borderColor: "#2C5F8A",
-              color: "#2C5F8A",
-              backgroundColor: "transparent",
+              borderColor: '#2C5F8A',
+              color: '#2C5F8A',
+              backgroundColor: '#FFFFFF',
             }}
           >
             {copied ? <Check size={16} /> : <Copy size={16} />}
-            {copied ? "Copied! \u2713" : "Copy link"}
+            {copied ? 'Copied! \u2713' : 'Copy link'}
           </button>
           <button
             onClick={openInYouTube}
             className="inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-medium text-white transition-colors hover:opacity-90"
-            style={{ backgroundColor: "#2C5F8A" }}
+            style={{ backgroundColor: '#2C5F8A' }}
           >
             <ExternalLink size={16} />
             Open in YouTube
@@ -84,13 +84,11 @@ export function YouTubePlayer({ url }: YouTubePlayerProps) {
       </div>
 
       {/* Info Box */}
-      <div
-        className="flex items-start gap-3 rounded-md p-4"
-        style={{ backgroundColor: "#EBF3FA" }}
-      >
-        <Info size={18} className="mt-0.5 flex-shrink-0" style={{ color: "#2C5F8A" }} />
-        <p className="text-sm" style={{ color: "#2C5F8A" }}>
-          YouTube Premium subscribers can download this video directly from YouTube for offline viewing.
+      <div className="flex items-start gap-3 rounded-md p-4" style={{ backgroundColor: '#EBF3FA' }}>
+        <Info size={18} className="mt-0.5 flex-shrink-0" style={{ color: '#2C5F8A' }} />
+        <p className="text-sm" style={{ color: '#2C5F8A' }}>
+          YouTube Premium subscribers can download this video directly from YouTube for offline
+          viewing.
         </p>
       </div>
     </div>

@@ -20,7 +20,7 @@ function initialFromEmail(email: string | null) {
 function CommentCard({ comment }: { comment: PublicComment }) {
   const name = comment.email ? comment.email.split('@')[0].replace(/[._]/g, ' ') : 'Anonymous';
   return (
-    <div className="rounded-card border border-border bg-primary-light/40 p-4">
+    <div className="rounded-card border border-border bg-white/90 p-4 shadow-card">
       <div className="flex items-start gap-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-light font-semibold text-primary">
           {initialFromEmail(comment.email)}
@@ -74,14 +74,16 @@ export function Comments({
 
   return (
     <div>
-      <h2 className="font-serif text-2xl font-semibold text-ink">Comments</h2>
-      <p className="mt-1 text-sm text-ink-muted">
+      <h2 className="font-serif text-2xl font-semibold text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.55)]">
+        Comments
+      </h2>
+      <p className="mt-1 text-sm text-white/90 [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]">
         {comments.length} {comments.length === 1 ? 'comment' : 'comments'}
       </p>
 
       <div className="scroll-area mt-5 max-h-[420px] space-y-3 overflow-y-auto pr-1">
         {comments.length === 0 ? (
-          <p className="rounded-card border border-dashed border-border p-6 text-center text-sm text-ink-muted">
+          <p className="rounded-card border border-dashed border-white/50 bg-white/10 p-6 text-center text-sm text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]">
             No comments yet. Be the first to share your thoughts.
           </p>
         ) : (
