@@ -1,12 +1,12 @@
-import sgMail from "@sendgrid/mail";
+import sgMail from '@sendgrid/mail';
 
 /**
  * New-comment notification to the admin. Fail-soft: any error is swallowed and
  * logged so a visitor's comment submission is never blocked.
  */
-const API_KEY = process.env.SENDGRID_API_KEY || "";
-const FROM = process.env.SENDGRID_FROM_EMAIL || "";
-const ADMIN = process.env.ADMIN_NOTIFY_EMAIL || "";
+const API_KEY = process.env.SENDGRID_API_KEY || '';
+const FROM = process.env.SENDGRID_FROM_EMAIL || '';
+const ADMIN = process.env.ADMIN_NOTIFY_EMAIL || '';
 
 if (API_KEY) {
   sgMail.setApiKey(API_KEY);
@@ -15,14 +15,12 @@ if (API_KEY) {
 export async function notifyNewComment(opts: {
   fileTitle: string;
   fileId: number;
-  email: string;
+  email: string | null;
   content: string;
   isPublic: boolean;
 }): Promise<void> {
   if (!API_KEY || !FROM || !ADMIN) {
-    console.info(
-      "[email] SendGrid not configured — skipping new-comment notification."
-    );
+    console.info('[email] SendGrid not configured — skipping new-comment notification.');
     return;
   }
   try {
@@ -31,17 +29,17 @@ export async function notifyNewComment(opts: {
       from: FROM,
       subject: `New comment awaiting review — "${opts.fileTitle}"`,
       text: [
-        `A new ${opts.isPublic ? "public" : "private"} comment was submitted.`,
+        `A new ${opts.isPublic ? 'public' : 'private'} comment was submitted.`,
         ``,
         `File: ${opts.fileTitle} (#${opts.fileId})`,
-        `From: ${opts.email}`,
+        `From: ${opts.email || 'Anonymous (no email provided)'}`,
         ``,
         opts.content,
         ``,
         `Review it in the admin panel under Comment Moderation.`,
-      ].join("\n"),
+      ].join('\n'),
     });
   } catch (err) {
-    console.error("[email] Failed to send comment notification:", err);
+    console.error('[email] Failed to send comment notification:', err);
   }
 }

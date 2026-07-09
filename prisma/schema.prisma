@@ -67,7 +67,7 @@ model Comment {
   id         Int      @id @default(autoincrement())
   fileId     Int      @map("file_id")
   content    String
-  email      String
+  email      String?
   isPublic   Boolean  @default(true) @map("is_public")
   // null = pending, true = approved, false = rejected
   isApproved Boolean? @map("is_approved")
