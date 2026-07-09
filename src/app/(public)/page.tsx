@@ -49,7 +49,7 @@ export default async function HomePage() {
             Personal Library
           </p>
           <h1 className="mt-4 max-w-2xl font-serif text-4xl font-semibold leading-[1.1] text-white md:text-[3.25rem]">
-            Medicine, art, and a life of inquiry
+            {settings.hero_title}
           </h1>
           <p className="mt-5 max-w-xl text-lg text-white/85">{settings.welcome}</p>
           <div className="mt-8 flex flex-wrap gap-3">

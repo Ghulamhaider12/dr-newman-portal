@@ -7,7 +7,9 @@ import { Textarea, Label } from '@/components/ui/Field';
 import { Button } from '@/components/ui/Button';
 
 type Settings = {
+  hero_title: string;
   welcome: string;
+  about: string;
   copyright: string;
   commercial: string;
   privacy: string;
@@ -17,9 +19,19 @@ type Settings = {
 
 const FIELDS: { key: keyof Settings; label: string; help: string }[] = [
   {
+    key: 'hero_title',
+    label: 'Homepage title',
+    help: 'The large heading at the top of the homepage.',
+  },
+  {
     key: 'welcome',
     label: 'Welcome message',
     help: 'Shown under the homepage hero heading.',
+  },
+  {
+    key: 'about',
+    label: 'About page content',
+    help: 'The body text on the About page. Leave a blank line between paragraphs.',
   },
   {
     key: 'copyright',
@@ -81,7 +93,7 @@ export function SettingsForm({
             id={f.key}
             value={values[f.key]}
             onChange={(e) => set(f.key, e.target.value)}
-            rows={f.key === 'welcome' || f.key === 'commercial' ? 3 : 2}
+            rows={f.key === 'about' ? 8 : f.key === 'welcome' || f.key === 'commercial' ? 3 : 2}
           />
           <p className="mt-1 text-xs text-ink-muted">{f.help}</p>
         </div>

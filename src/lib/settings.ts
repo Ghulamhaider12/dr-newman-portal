@@ -1,7 +1,9 @@
 import { prisma } from '@/lib/prisma';
 
 export const SETTING_KEYS = [
+  'hero_title',
   'welcome',
+  'about',
   'copyright',
   'commercial',
   'privacy',
@@ -12,8 +14,11 @@ export const SETTING_KEYS = [
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
 export const SETTING_DEFAULTS: Record<SettingKey, string> = {
+  hero_title: 'Medicine, art, and a life of inquiry',
   welcome:
     "A personal archive of Dr. Newman's research, lectures, recordings, and writing — freely available to browse and download.",
+  about:
+    'Dr. A. Newman is a physician and researcher who has spent a career at the meeting point of medicine, art, and the written word. This portal is a personal library — a place to share research papers, lectures, recordings, and writing with students, colleagues, and anyone curious.\n\nEverything here is offered freely for educational and non-commercial use. If a piece is useful to you, please cite Dr. A. Newman and do not redistribute it without permission.',
   copyright:
     '© Dr. A. Newman. Shared for educational and non-commercial use. Please cite Dr. A. Newman and do not redistribute without permission.',
   commercial:
