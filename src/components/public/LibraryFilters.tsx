@@ -1,28 +1,15 @@
-"use client";
+'use client';
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
-import { Search } from "lucide-react";
-import { Input, Select, Label } from "@/components/ui/Field";
-import { fileTypeLabel } from "@/lib/fileType";
-import type { FileType } from "@prisma/client";
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
+import { Search } from 'lucide-react';
+import { Input, Select, Label } from '@/components/ui/Field';
+import { fileTypeLabel } from '@/lib/fileType';
+import type { FileType } from '@prisma/client';
 
-const FILE_TYPES: FileType[] = [
-  "PDF",
-  "MP3",
-  "MP4",
-  "JPG",
-  "PNG",
-  "PPT",
-  "XLS",
-  "DOC",
-];
+const FILE_TYPES: FileType[] = ['PDF', 'MP3', 'MP4', 'JPG', 'PNG', 'PPT', 'XLS', 'DOC'];
 
-export function LibraryFilters({
-  categories,
-}: {
-  categories: { id: number; name: string }[];
-}) {
+export function LibraryFilters({ categories }: { categories: { id: number; name: string }[] }) {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -39,7 +26,9 @@ export function LibraryFilters({
   return (
     <div className="grid gap-4 md:grid-cols-[2fr_1fr_1fr]">
       <div>
-        <Label htmlFor="q">Search</Label>
+        <Label htmlFor="q" className="text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]">
+          Search
+        </Label>
         <div className="relative">
           <Search
             size={18}
@@ -47,19 +36,21 @@ export function LibraryFilters({
           />
           <Input
             id="q"
-            defaultValue={params.get("q") ?? ""}
-            onChange={(e) => update("q", e.target.value)}
+            defaultValue={params.get('q') ?? ''}
+            onChange={(e) => update('q', e.target.value)}
             placeholder="Search titles and topics…"
             className="pl-10"
           />
         </div>
       </div>
       <div>
-        <Label htmlFor="category">Category</Label>
+        <Label htmlFor="category" className="text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]">
+          Category
+        </Label>
         <Select
           id="category"
-          defaultValue={params.get("category") ?? ""}
-          onChange={(e) => update("category", e.target.value)}
+          defaultValue={params.get('category') ?? ''}
+          onChange={(e) => update('category', e.target.value)}
         >
           <option value="">All categories</option>
           {categories.map((c) => (
@@ -70,11 +61,13 @@ export function LibraryFilters({
         </Select>
       </div>
       <div>
-        <Label htmlFor="type">File type</Label>
+        <Label htmlFor="type" className="text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]">
+          File type
+        </Label>
         <Select
           id="type"
-          defaultValue={params.get("type") ?? ""}
-          onChange={(e) => update("type", e.target.value)}
+          defaultValue={params.get('type') ?? ''}
+          onChange={(e) => update('type', e.target.value)}
         >
           <option value="">All types</option>
           {FILE_TYPES.map((t) => (
