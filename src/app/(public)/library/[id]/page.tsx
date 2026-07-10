@@ -1,12 +1,14 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ChevronRight, Calendar, HardDrive, Download, FileText } from 'lucide-react';
+import { ChevronRight, Calendar, HardDrive, Download, FileText, ExternalLink } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { getSettings } from '@/lib/settings';
 import { CategoryBadge, FileTypeBadge } from '@/components/ui/Badge';
 import { ButtonLink } from '@/components/ui/Button';
 import { YouTubePlayer } from '@/components/public/YouTubePlayer';
+import { FilePreview } from '@/components/public/FilePreview';
 import { Comments, type PublicComment } from '@/components/public/Comments';
+import { getSignedDownloadUrl } from '@/lib/spaces';
 import { formatDate, formatFileSize, formatCount } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
@@ -30,6 +32,15 @@ export default async function FileDetailPage({ params }: { params: { id: string 
   ]);
 
   if (!file) notFound();
+
+  // Resolve a directly-loadable URL for inline preview (non-YouTube uploads
+  // only). Uses a longer signed-URL window than a plain download so video
+  // playback/seeking isn't cut off. Loading a preview does NOT hit the download
+  // route, so it never inflates the download counter.
+  const previewUrl =
+    !file.isYoutube && file.storageKey
+      ? await getSignedDownloadUrl(file.storageKey, 60 * 60)
+      : null;
 
   const comments: PublicComment[] = file.comments.map((c) => ({
     id: c.id,
@@ -86,6 +97,12 @@ export default async function FileDetailPage({ params }: { params: { id: string 
               </div>
             )}
 
+            {/* Inline preview for uploaded files (image/audio/video/PDF; Office
+                files fall back to a download prompt) */}
+            {previewUrl && (
+              <FilePreview fileType={file.fileType} url={previewUrl} title={file.title} />
+            )}
+
             {/* Metadata */}
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/90 [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]">
               <span className="inline-flex items-center gap-1.5">
@@ -106,11 +123,25 @@ export default async function FileDetailPage({ params }: { params: { id: string 
 
             {/* Action (non-YouTube only) */}
             {!file.isYoutube && (
-              <div className="mt-7">
+              <div className="mt-7 flex flex-wrap gap-3">
                 <ButtonLink href={`/library/${file.id}/download`} variant="success" size="lg">
                   <Download size={18} />
                   Download
                 </ButtonLink>
+                {/* PDFs can also open in a new browser tab (native viewer).
+                    The inline preview above stays as-is. */}
+                {file.fileType === 'PDF' && previewUrl && (
+                  <ButtonLink
+                    href={previewUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    variant="secondary"
+                    size="lg"
+                  >
+                    <ExternalLink size={18} />
+                    Open PDF
+                  </ButtonLink>
+                )}
               </div>
             )}
 
