@@ -10,6 +10,7 @@ import { LogoMark } from '@/components/ui/Logo';
 const LINKS = [
   { href: '/', label: 'Home' },
   { href: '/library', label: 'Library' },
+  { href: '/videos', label: 'Videos' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];

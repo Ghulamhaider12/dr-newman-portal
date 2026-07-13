@@ -115,3 +115,25 @@ model AdminUser {
 
   @@map("admin_users")
 }
+
+// A YouTube video synced from the channel via the Data API (read-only).
+// Stats are refreshed on each admin "Sync now"; isHidden lets an admin keep a
+// video off the public /videos listing.
+model Video {
+  id           Int      @id @default(autoincrement())
+  videoId      String   @unique @map("video_id")
+  title        String
+  description  String   @default("")
+  thumbnailUrl String   @default("") @map("thumbnail_url")
+  publishedAt  DateTime @map("published_at")
+  viewCount    Int      @default(0) @map("view_count")
+  likeCount    Int      @default(0) @map("like_count")
+  commentCount Int      @default(0) @map("comment_count")
+  duration     String   @default("")
+  isHidden     Boolean  @default(false) @map("is_hidden")
+  syncedAt     DateTime @default(now()) @map("synced_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([publishedAt])
+  @@map("videos")
+}

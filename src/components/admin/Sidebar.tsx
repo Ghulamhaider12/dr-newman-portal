@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Bell,
   Settings,
+  Youtube,
   LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -26,6 +27,7 @@ const NAV = [
     icon: MessageSquare,
     badgeKey: 'pending' as const,
   },
+  { href: '/admin/youtube', label: 'YouTube', icon: Youtube },
   { href: '/admin/notifications', label: 'Notifications', icon: Bell },
   { href: '/admin/settings', label: 'Site Settings', icon: Settings },
 ];
