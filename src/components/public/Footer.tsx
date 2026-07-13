@@ -8,7 +8,7 @@ export function Footer({ copyright, privacy }: { copyright: string; privacy: str
         <div className="max-w-md">
           <div className="flex items-center gap-3">
             <LogoMark className="h-8 w-8 text-base" />
-            <span className="font-serif text-lg font-semibold text-ink">advice4doc</span>
+            <span className="font-serif text-lg font-semibold text-ink">advice4docs</span>
           </div>
           <p className="mt-3 text-sm text-ink-muted">{copyright}</p>
         </div>

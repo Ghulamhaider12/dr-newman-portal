@@ -28,7 +28,7 @@ export function Navbar() {
       <div className="container-page flex h-[68px] items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
           <LogoMark className="h-9 w-9 text-lg" />
-          <span className="font-serif text-xl font-semibold text-ink">advice4doc</span>
+          <span className="font-serif text-xl font-semibold text-ink">advice4docs</span>
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">

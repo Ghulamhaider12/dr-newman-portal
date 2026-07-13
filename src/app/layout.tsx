@@ -18,7 +18,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'advice4doc — Content Portal',
+  title: 'advice4docs — Content Portal',
   description:
     "A personal archive of Dr. Newman's research, lectures, recordings, and writing — freely available to browse and download.",
 };
