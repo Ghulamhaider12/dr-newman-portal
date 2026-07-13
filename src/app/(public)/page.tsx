@@ -34,6 +34,15 @@ export default async function HomePage() {
     ? publicUrl(settings.recent_background_photo)
     : '';
 
+  // Split the hero title so a trailing parenthetical — or anything after a
+  // manual line break — renders smaller on its own line. Lets the admin type
+  // e.g. "…Art of Medicine (And some other things)" in one field and have the
+  // "(And some other things)" show smaller beneath the main heading.
+  const rawTitle = settings.hero_title;
+  const breakAt = rawTitle.includes('\n') ? rawTitle.indexOf('\n') : rawTitle.indexOf('(');
+  const titleMain = breakAt > 0 ? rawTitle.slice(0, breakAt).trim() : rawTitle;
+  const titleSub = breakAt > 0 ? rawTitle.slice(breakAt).trim() : '';
+
   return (
     <>
       {/* Hero */}
@@ -48,10 +57,19 @@ export default async function HomePage() {
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/80">
             Personal Library
           </p>
-          <h1 className="mt-4 max-w-2xl font-serif text-4xl font-semibold leading-[1.1] text-white md:text-[3.25rem]">
-            {settings.hero_title}
+          <h1 className="mt-4 max-w-3xl font-serif text-4xl font-semibold leading-[1.1] text-white md:text-[3.25rem]">
+            {titleMain}
+            {titleSub && (
+              <span className="mt-3 block whitespace-pre-line text-2xl font-medium text-white/85 md:text-3xl">
+                {titleSub}
+              </span>
+            )}
           </h1>
-          <p className="mt-5 max-w-xl text-lg text-white/85">{settings.welcome}</p>
+          {/* whitespace-pre-line renders manual line breaks (hard returns)
+              typed in the admin Site Settings field. */}
+          <p className="mt-5 max-w-xl whitespace-pre-line text-lg text-white/85">
+            {settings.welcome}
+          </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <ButtonLink href="/library" variant="success" size="lg">
               Browse the library

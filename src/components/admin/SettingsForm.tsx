@@ -21,12 +21,12 @@ const FIELDS: { key: keyof Settings; label: string; help: string }[] = [
   {
     key: 'hero_title',
     label: 'Homepage title',
-    help: 'The large heading at the top of the homepage.',
+    help: 'The large heading at the top of the homepage. Text in parentheses — or anything after a line break (Enter) — shows smaller on its own line.',
   },
   {
     key: 'welcome',
     label: 'Welcome message',
-    help: 'Shown under the homepage hero heading.',
+    help: 'Shown under the homepage hero heading. Press Enter for a line break.',
   },
   {
     key: 'about',

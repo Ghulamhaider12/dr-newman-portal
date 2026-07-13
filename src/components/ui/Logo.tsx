@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 
 /**
- * The advice4doc brand mark — a steel-blue speech bubble with a white medical
+ * The advice4docs brand mark — a steel-blue speech bubble with a white medical
  * cross. Self-contained (the bubble is the container), so it is NOT wrapped in
  * another colored circle. Size it via `className` (e.g. `h-9 w-9`); the SVG
  * fills the box. Colors are fixed and read well on the app's light surfaces.

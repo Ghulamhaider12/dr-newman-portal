@@ -47,7 +47,7 @@ function LoginForm() {
       <div className="flex flex-col items-center">
         <LogoMark className="h-14 w-14 text-2xl" />
         <h1 className="mt-5 font-serif text-3xl font-semibold text-ink">Admin sign in</h1>
-        <p className="mt-1 text-ink-muted">advice4doc &middot; Content Portal</p>
+        <p className="mt-1 text-ink-muted">advice4docs &middot; Content Portal</p>
       </div>
 
       <form
