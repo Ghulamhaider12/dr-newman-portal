@@ -7,6 +7,7 @@ import { CategoryBadge, FileTypeBadge } from '@/components/ui/Badge';
 import { ButtonLink } from '@/components/ui/Button';
 import { YouTubePlayer } from '@/components/public/YouTubePlayer';
 import { FilePreview } from '@/components/public/FilePreview';
+import { HelpingMaterials } from '@/components/public/HelpingMaterials';
 import { Comments, type PublicComment } from '@/components/public/Comments';
 import { getSignedDownloadUrl } from '@/lib/spaces';
 import { formatDate, formatFileSize, formatCount } from '@/lib/utils';
@@ -26,6 +27,7 @@ export default async function FileDetailPage({ params }: { params: { id: string 
           where: { isApproved: true, isPublic: true },
           orderBy: { createdAt: 'desc' },
         },
+        helpingMaterials: { orderBy: { position: 'asc' } },
       },
     }),
     getSettings(),
@@ -41,6 +43,15 @@ export default async function FileDetailPage({ params }: { params: { id: string 
     !file.isYoutube && file.storageKey
       ? await getSignedDownloadUrl(file.storageKey, 60 * 60)
       : null;
+
+  // Signed preview URLs for each helping material (same 1-hour window as the
+  // main preview), resolved concurrently.
+  const materials = await Promise.all(
+    file.helpingMaterials.map(async (m) => ({
+      ...m,
+      previewUrl: await getSignedDownloadUrl(m.storageKey, 60 * 60),
+    }))
+  );
 
   const comments: PublicComment[] = file.comments.map((c) => ({
     id: c.id,
@@ -144,6 +155,9 @@ export default async function FileDetailPage({ params }: { params: { id: string 
                 )}
               </div>
             )}
+
+            {/* Helping material — supplementary files as a collapsible list */}
+            <HelpingMaterials fileId={file.id} materials={materials} />
 
             {/* Copyright notice */}
             <div className="mt-8 rounded-card border border-warning/30 bg-[#FBF3EA] p-4">

@@ -55,12 +55,30 @@ model File {
   dateUploaded DateTime  @default(now()) @map("date_uploaded")
   createdAt    DateTime  @default(now()) @map("created_at")
 
-  category      Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  comments      Comment[]
-  notifications Notification[]
+  category         Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  comments         Comment[]
+  notifications    Notification[]
+  helpingMaterials HelpingMaterial[]
 
   @@index([categoryId])
   @@map("files")
+}
+
+model HelpingMaterial {
+  id         Int      @id @default(autoincrement())
+  fileId     Int      @map("file_id")
+  title      String   @default("") // optional friendly label
+  filename   String   @default("") // original filename, for display fallback
+  storageKey String   @map("storage_key")
+  fileType   FileType @map("file_type")
+  fileSize   Int      @default(0) @map("file_size") // bytes
+  position   Int      @default(0) // display order
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  file File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@index([fileId])
+  @@map("helping_materials")
 }
 
 model Comment {

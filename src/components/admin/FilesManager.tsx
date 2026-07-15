@@ -1,15 +1,23 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, Upload, Youtube, FileCheck2 } from "lucide-react";
-import { Modal, ConfirmDialog } from "@/components/admin/Modal";
-import { Wysiwyg } from "@/components/admin/Wysiwyg";
-import { Input, Select, Label } from "@/components/ui/Field";
-import { Button } from "@/components/ui/Button";
-import { FileTypeBadge, CategoryBadge } from "@/components/ui/Badge";
-import { formatDate } from "@/lib/utils";
-import type { FileType } from "@prisma/client";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Plus, Pencil, Trash2, Upload, Youtube, FileCheck2 } from 'lucide-react';
+import { Modal, ConfirmDialog } from '@/components/admin/Modal';
+import { Wysiwyg } from '@/components/admin/Wysiwyg';
+import { Input, Select, Label } from '@/components/ui/Field';
+import { Button } from '@/components/ui/Button';
+import { FileTypeBadge, CategoryBadge } from '@/components/ui/Badge';
+import { formatDate } from '@/lib/utils';
+import type { FileType } from '@prisma/client';
+
+type Material = {
+  title: string;
+  filename: string;
+  storageKey: string;
+  fileType: FileType;
+  fileSize: number;
+};
 
 type FileRow = {
   id: number;
@@ -23,52 +31,48 @@ type FileRow = {
   fileSize: number;
   dateUploaded: string;
   category: { name: string } | null;
+  helpingMaterials: Array<Material & { id: number }>;
 };
 
 type Category = { id: number; name: string };
 
-const todayISO = (d?: string) =>
-  (d ? new Date(d) : new Date()).toISOString().slice(0, 10);
+const todayISO = (d?: string) => (d ? new Date(d) : new Date()).toISOString().slice(0, 10);
 
-export function FilesManager({
-  files,
-  categories,
-}: {
-  files: FileRow[];
-  categories: Category[];
-}) {
+export function FilesManager({ files, categories }: { files: FileRow[]; categories: Category[] }) {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<FileRow | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<FileRow | null>(null);
 
   // form state
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [categoryId, setCategoryId] = useState<string>("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [categoryId, setCategoryId] = useState<string>('');
   const [date, setDate] = useState(todayISO());
-  const [source, setSource] = useState<"upload" | "youtube">("upload");
-  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [source, setSource] = useState<'upload' | 'youtube'>('upload');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
   const [upload, setUpload] = useState<{
     storageKey: string;
     filename: string;
     fileType: FileType;
     fileSize: number;
   } | null>(null);
+  const [materials, setMaterials] = useState<Material[]>([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   function openAdd() {
     setEditing(null);
-    setTitle("");
-    setDescription("");
-    setCategoryId("");
+    setTitle('');
+    setDescription('');
+    setCategoryId('');
     setDate(todayISO());
-    setSource("upload");
-    setYoutubeUrl("");
+    setSource('upload');
+    setYoutubeUrl('');
     setUpload(null);
-    setError("");
+    setMaterials([]);
+    setError('');
     setModalOpen(true);
   }
 
@@ -76,38 +80,101 @@ export function FilesManager({
     setEditing(f);
     setTitle(f.title);
     setDescription(f.description);
-    setCategoryId(f.categoryId ? String(f.categoryId) : "");
+    setCategoryId(f.categoryId ? String(f.categoryId) : '');
     setDate(todayISO(f.dateUploaded));
-    setSource(f.isYoutube ? "youtube" : "upload");
-    setYoutubeUrl(f.isYoutube ? f.url : "");
+    setSource(f.isYoutube ? 'youtube' : 'upload');
+    setYoutubeUrl(f.isYoutube ? f.url : '');
     setUpload(null);
-    setError("");
+    setMaterials(
+      f.helpingMaterials.map((m) => ({
+        title: m.title,
+        filename: m.filename,
+        storageKey: m.storageKey,
+        fileType: m.fileType,
+        fileSize: m.fileSize,
+      }))
+    );
+    setError('');
     setModalOpen(true);
+  }
+
+  /** Upload a single file to storage and return its stored descriptor. */
+  async function uploadFile(file: File) {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('kind', 'file');
+    const res = await fetch('/api/upload', { method: 'POST', body: form });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Upload failed.');
+    return json as {
+      storageKey: string;
+      filename: string;
+      fileType: FileType;
+      fileSize: number;
+    };
   }
 
   async function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    setError("");
-    const form = new FormData();
-    form.append("file", file);
-    form.append("kind", "file");
-    const res = await fetch("/api/upload", { method: "POST", body: form });
-    setUploading(false);
-    const json = await res.json();
-    if (!res.ok) {
-      setError(json.error || "Upload failed.");
-      return;
+    setError('');
+    try {
+      setUpload(await uploadFile(file));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Upload failed.');
+    } finally {
+      setUploading(false);
     }
-    setUpload(json);
+  }
+
+  function addMaterialRow() {
+    setMaterials((prev) => [
+      ...prev,
+      { title: '', filename: '', storageKey: '', fileType: 'PDF', fileSize: 0 },
+    ]);
+  }
+
+  function removeMaterialRow(index: number) {
+    setMaterials((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function updateMaterialTitle(index: number, title: string) {
+    setMaterials((prev) => prev.map((m, i) => (i === index ? { ...m, title } : m)));
+  }
+
+  async function onMaterialFileChange(index: number, e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError('');
+    try {
+      const up = await uploadFile(file);
+      setMaterials((prev) =>
+        prev.map((m, i) =>
+          i === index
+            ? {
+                ...m,
+                filename: up.filename,
+                storageKey: up.storageKey,
+                fileType: up.fileType,
+                fileSize: up.fileSize,
+              }
+            : m
+        )
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Upload failed.');
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
+    setError('');
     if (!title.trim()) {
-      setError("Title is required.");
+      setError('Title is required.');
       return;
     }
 
@@ -118,7 +185,7 @@ export function FilesManager({
       dateUploaded: date,
     };
 
-    if (source === "youtube") {
+    if (source === 'youtube') {
       payload.isYoutube = true;
       payload.url = youtubeUrl;
     } else if (upload) {
@@ -127,23 +194,23 @@ export function FilesManager({
       payload.filename = upload.filename;
       payload.fileSize = upload.fileSize;
     } else if (!editing) {
-      setError("Upload a file or provide a YouTube URL.");
+      setError('Upload a file or provide a YouTube URL.');
       return;
     }
 
+    // Only send materials with an uploaded object; the API validates + orders them.
+    payload.helpingMaterials = materials.filter((m) => m.storageKey);
+
     setSaving(true);
-    const res = await fetch(
-      editing ? `/api/files/${editing.id}` : "/api/files",
-      {
-        method: editing ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }
-    );
+    const res = await fetch(editing ? `/api/files/${editing.id}` : '/api/files', {
+      method: editing ? 'PATCH' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
     setSaving(false);
     const json = await res.json();
     if (!res.ok) {
-      setError(json.error || "Could not save.");
+      setError(json.error || 'Could not save.');
       return;
     }
     setModalOpen(false);
@@ -152,7 +219,7 @@ export function FilesManager({
 
   async function confirmDelete() {
     if (!deleteTarget) return;
-    await fetch(`/api/files/${deleteTarget.id}`, { method: "DELETE" });
+    await fetch(`/api/files/${deleteTarget.id}`, { method: 'DELETE' });
     setDeleteTarget(null);
     router.refresh();
   }
@@ -186,9 +253,7 @@ export function FilesManager({
                 <td className="px-4 py-3">
                   <FileTypeBadge type={f.fileType} />
                 </td>
-                <td className="px-4 py-3 text-ink-muted">
-                  {formatDate(f.dateUploaded)}
-                </td>
+                <td className="px-4 py-3 text-ink-muted">{formatDate(f.dateUploaded)}</td>
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-2">
                     <button
@@ -223,7 +288,7 @@ export function FilesManager({
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editing ? "Edit file" : "Add file"}
+        title={editing ? 'Edit file' : 'Add file'}
       >
         <form onSubmit={save} className="space-y-5">
           <div>
@@ -279,29 +344,29 @@ export function FilesManager({
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => setSource("upload")}
+                onClick={() => setSource('upload')}
                 className={`inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-control border text-sm font-medium ${
-                  source === "upload"
-                    ? "border-primary bg-primary-light text-primary"
-                    : "border-border-strong text-ink"
+                  source === 'upload'
+                    ? 'border-primary bg-primary-light text-primary'
+                    : 'border-border-strong text-ink'
                 }`}
               >
                 <Upload size={16} /> Upload a file
               </button>
               <button
                 type="button"
-                onClick={() => setSource("youtube")}
+                onClick={() => setSource('youtube')}
                 className={`inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-control border text-sm font-medium ${
-                  source === "youtube"
-                    ? "border-primary bg-primary-light text-primary"
-                    : "border-border-strong text-ink"
+                  source === 'youtube'
+                    ? 'border-primary bg-primary-light text-primary'
+                    : 'border-border-strong text-ink'
                 }`}
               >
                 <Youtube size={16} /> YouTube URL
               </button>
             </div>
 
-            {source === "upload" ? (
+            {source === 'upload' ? (
               <div className="mt-3">
                 <input
                   id="f-file"
@@ -309,16 +374,12 @@ export function FilesManager({
                   onChange={onFileChange}
                   className="block w-full text-sm text-ink-muted file:mr-3 file:h-10 file:rounded-control file:border file:border-border-strong file:bg-white file:px-4 file:text-sm file:font-medium file:text-ink hover:file:bg-surface"
                 />
-                {uploading && (
-                  <p className="mt-2 text-sm text-ink-muted">Uploading…</p>
-                )}
+                {uploading && <p className="mt-2 text-sm text-ink-muted">Uploading…</p>}
                 {upload && (
                   <p className="mt-2 inline-flex items-center gap-2 text-sm text-success">
                     <FileCheck2 size={16} /> {upload.filename}
                     <FileTypeBadge type={upload.fileType} />
-                    <span className="text-ink-muted">
-                      (type auto-detected)
-                    </span>
+                    <span className="text-ink-muted">(type auto-detected)</span>
                   </p>
                 )}
                 {editing && !upload && !editing.isYoutube && (
@@ -336,10 +397,64 @@ export function FilesManager({
                   placeholder="https://www.youtube.com/watch?v=…"
                 />
                 <p className="mt-1.5 text-xs text-ink-muted">
-                  Type is set to MP4. The video is never embedded — visitors get a
-                  copyable link.
+                  Type is set to MP4. The video is never embedded — visitors get a copyable link.
                 </p>
               </div>
+            )}
+          </div>
+
+          {/* Helping material — supplementary files shown alongside this file */}
+          <div className="border-t border-border pt-5">
+            <div className="flex items-center justify-between">
+              <Label>Helping material</Label>
+              <button
+                type="button"
+                onClick={addMaterialRow}
+                className="inline-flex items-center gap-1.5 rounded-control border border-border-strong px-3 py-1.5 text-sm font-medium text-ink hover:bg-surface"
+              >
+                <Plus size={15} /> Add material
+              </button>
+            </div>
+            <p className="mt-1 text-xs text-ink-muted">
+              Optional supporting files (handouts, references…) shown on the file page for visitors
+              to preview and download.
+            </p>
+
+            {materials.length > 0 && (
+              <ul className="mt-3 space-y-3">
+                {materials.map((m, i) => (
+                  <li key={i} className="rounded-control border border-border p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-1 space-y-2">
+                        <Input
+                          value={m.title}
+                          onChange={(e) => updateMaterialTitle(i, e.target.value)}
+                          placeholder="Optional label (defaults to the filename)"
+                        />
+                        <input
+                          type="file"
+                          onChange={(e) => onMaterialFileChange(i, e)}
+                          className="block w-full text-sm text-ink-muted file:mr-3 file:h-9 file:rounded-control file:border file:border-border-strong file:bg-white file:px-3 file:text-sm file:font-medium file:text-ink hover:file:bg-surface"
+                        />
+                        {m.storageKey && (
+                          <p className="inline-flex items-center gap-2 text-sm text-success">
+                            <FileCheck2 size={16} /> {m.filename}
+                            <FileTypeBadge type={m.fileType} />
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeMaterialRow(i)}
+                        aria-label="Remove material"
+                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-[#E3C3C3] text-[#B23B3B] hover:bg-[#FBEDED]"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
 
@@ -354,7 +469,7 @@ export function FilesManager({
               Cancel
             </button>
             <Button type="submit" variant="success" disabled={saving || uploading}>
-              {saving ? "Saving…" : editing ? "Save changes" : "Add file"}
+              {saving ? 'Saving…' : editing ? 'Save changes' : 'Add file'}
             </Button>
           </div>
         </form>
