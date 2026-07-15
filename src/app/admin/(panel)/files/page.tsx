@@ -1,16 +1,19 @@
-import { prisma } from "@/lib/prisma";
-import { PageHeader } from "@/components/admin/PageHeader";
-import { FilesManager } from "@/components/admin/FilesManager";
+import { prisma } from '@/lib/prisma';
+import { PageHeader } from '@/components/admin/PageHeader';
+import { FilesManager } from '@/components/admin/FilesManager';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export default async function AdminFilesPage() {
   const [files, categories, pending] = await Promise.all([
     prisma.file.findMany({
-      orderBy: { dateUploaded: "desc" },
-      include: { category: { select: { name: true } } },
+      orderBy: { dateUploaded: 'desc' },
+      include: {
+        category: { select: { name: true } },
+        helpingMaterials: { orderBy: { position: 'asc' } },
+      },
     }),
-    prisma.category.findMany({ orderBy: { position: "asc" } }),
+    prisma.category.findMany({ orderBy: { position: 'asc' } }),
     prisma.comment.count({ where: { isApproved: null } }),
   ]);
 
@@ -19,6 +22,14 @@ export default async function AdminFilesPage() {
     ...f,
     dateUploaded: f.dateUploaded.toISOString(),
     createdAt: f.createdAt.toISOString(),
+    helpingMaterials: f.helpingMaterials.map((m) => ({
+      id: m.id,
+      title: m.title,
+      filename: m.filename,
+      storageKey: m.storageKey,
+      fileType: m.fileType,
+      fileSize: m.fileSize,
+    })),
   }));
 
   return (
