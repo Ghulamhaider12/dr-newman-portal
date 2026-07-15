@@ -13,6 +13,13 @@ import { formatDate, formatFileSize, formatCount } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
 
+// Self-referencing canonical so search engines attribute this page to the real
+// domain (metadataBase), not a reverse-proxy mirror re-hosting our content.
+export function generateMetadata({ params }: { params: { id: string } }) {
+  const id = Number(params.id);
+  return id ? { alternates: { canonical: `/library/${id}` } } : {};
+}
+
 export default async function FileDetailPage({ params }: { params: { id: string } }) {
   const id = Number(params.id);
   if (!id) notFound();
