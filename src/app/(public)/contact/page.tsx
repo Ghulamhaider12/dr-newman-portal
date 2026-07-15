@@ -1,4 +1,7 @@
-export const metadata = { title: "Contact — Dr. Newman's Content Portal" };
+export const metadata = {
+  title: "Contact — Dr. Newman's Content Portal",
+  alternates: { canonical: '/contact' },
+};
 
 export default function ContactPage() {
   return (

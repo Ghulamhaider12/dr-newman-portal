@@ -1,6 +1,9 @@
 import { getSettings } from '@/lib/settings';
 
-export const metadata = { title: "About — Dr. Newman's Content Portal" };
+export const metadata = {
+  title: "About — Dr. Newman's Content Portal",
+  alternates: { canonical: '/about' },
+};
 export const dynamic = 'force-dynamic';
 
 export default async function AboutPage() {

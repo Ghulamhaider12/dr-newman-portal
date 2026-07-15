@@ -7,6 +7,7 @@ import { ButtonLink } from '@/components/ui/Button';
 import { FileCard, type FileCardData } from '@/components/public/FileCard';
 import { categoryColor } from '@/lib/utils';
 
+export const metadata = { alternates: { canonical: '/' } };
 export const dynamic = 'force-dynamic';
 
 const CATEGORY_ICON = {

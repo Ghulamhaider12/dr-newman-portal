@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { LibraryFilters } from '@/components/public/LibraryFilters';
 import { FileCard, type FileCardData } from '@/components/public/FileCard';
 
+export const metadata = { alternates: { canonical: '/library' } };
 export const dynamic = 'force-dynamic';
 
 const VALID_TYPES = new Set(['PDF', 'MP3', 'MP4', 'JPG', 'PNG', 'PPT', 'XLS', 'DOC']);
