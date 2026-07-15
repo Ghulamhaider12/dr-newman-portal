@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Lora, Inter } from 'next/font/google';
+import { SITE_ORIGIN } from '@/lib/site';
 import './globals.css';
 
 const lora = Lora({
@@ -17,12 +18,9 @@ const inter = Inter({
   display: 'swap',
 });
 
-// The canonical public origin. Setting metadataBase makes every canonical/OG
-// URL absolute against this domain — so even when a scraper reverse-proxies our
-// HTML on another hostname, the embedded <link rel="canonical"> still points
-// search engines back to the real site.
-const SITE_ORIGIN = 'https://advice4docs.com';
-
+// metadataBase makes every canonical/OG URL absolute against SITE_ORIGIN — so
+// even when a scraper reverse-proxies our HTML on another hostname, the embedded
+// <link rel="canonical"> still points search engines back to the real site.
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
   title: 'advice4docs — Content Portal',
