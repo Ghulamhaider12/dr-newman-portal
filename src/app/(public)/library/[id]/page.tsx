@@ -114,6 +114,11 @@ export default async function FileDetailPage({ params }: { params: { id: string 
               <FilePreview fileType={file.fileType} url={previewUrl} title={file.title} />
             )}
 
+            {/* Helping material — supplementary files as a collapsible list.
+                Sits directly under the main file so it's visible without
+                scrolling past the metadata and download actions. */}
+            <HelpingMaterials fileId={file.id} materials={materials} />
+
             {/* Metadata */}
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/90 [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]">
               <span className="inline-flex items-center gap-1.5">
@@ -155,9 +160,6 @@ export default async function FileDetailPage({ params }: { params: { id: string 
                 )}
               </div>
             )}
-
-            {/* Helping material — supplementary files as a collapsible list */}
-            <HelpingMaterials fileId={file.id} materials={materials} />
 
             {/* Copyright notice */}
             <div className="mt-8 rounded-card border border-warning/30 bg-[#FBF3EA] p-4">
