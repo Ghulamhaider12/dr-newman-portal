@@ -38,20 +38,22 @@ export function HelpingMaterials({ fileId, materials }: { fileId: number; materi
   if (materials.length === 0) return null;
 
   return (
-    <div className="mt-8">
-      <h2 className="font-serif text-xl font-semibold text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]">
-        Helping material{' '}
-        <span className="font-sans text-base font-normal text-white/80">({materials.length})</span>
-      </h2>
+    <div className="overflow-hidden rounded-card border border-border bg-white shadow-card">
+      <div className="border-b border-border px-4 py-3">
+        <h2 className="font-serif text-lg font-semibold text-ink">
+          Helping material{' '}
+          <span className="font-sans text-sm font-normal text-ink-muted">({materials.length})</span>
+        </h2>
+      </div>
 
-      <div className="mt-4 divide-y divide-border overflow-hidden rounded-card border border-white/20 bg-white/95 shadow-card">
+      <div className="divide-y divide-border">
         {materials.map((m) => {
           const isOpen = open.has(m.id);
           const label = m.title || m.filename;
           const panelId = `hm-panel-${m.id}`;
           return (
             <div key={m.id}>
-              <div className="flex items-center gap-3 p-3 sm:p-4">
+              <div className="flex items-center gap-2 p-3 sm:p-4">
                 <button
                   type="button"
                   onClick={() => toggle(m.id)}
@@ -67,19 +69,21 @@ export function HelpingMaterials({ fileId, materials }: { fileId: number; materi
                     )}
                   />
                   <FileTypeBadge type={m.fileType} />
-                  <span className="truncate font-medium text-ink">{label}</span>
-                  <span className="shrink-0 text-sm text-ink-muted">
-                    {formatFileSize(m.fileSize)}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium text-ink">{label}</span>
+                    <span className="block text-xs text-ink-muted">
+                      {formatFileSize(m.fileSize)}
+                    </span>
                   </span>
                 </button>
                 <ButtonLink
                   href={`/library/${fileId}/materials/${m.id}/download`}
                   variant="success"
                   size="sm"
-                  className="shrink-0"
+                  className="shrink-0 !px-2.5"
+                  aria-label={`Download ${label}`}
                 >
                   <Download size={16} />
-                  <span className="hidden sm:inline">Download</span>
                 </ButtonLink>
               </div>
 
